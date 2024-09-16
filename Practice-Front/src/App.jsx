@@ -6,12 +6,14 @@ import SignUp from './components/auth/SignUp'
 import Home from './components/auth/Home'
 import { Provider } from 'react-redux'
 import { store } from './Redux/store'
-import Jobs from './components/Jobs'
+import Jobs from './components/admin/Jobs'
 import JobDescription from './components/JobDescription'
 import UserProfile from './components/UserProfile'
 import Companies from './components/admin/Companies'
 import AddCompany from './components/admin/AddCompany'
 import CompanySetup from './components/admin/CompanySetup'
+import CreateAdminJobs from './components/admin/CreateAdminJobs'
+
 
 function App() {
 
@@ -51,6 +53,14 @@ function App() {
     {
       path:"/admin/companies/:id",
       element:<CompanySetup/>
+    },
+    {
+      path:"/admin/jobs",
+      element:<Jobs/>
+    },
+    {
+      path:"/admin/jobs/create",
+      element:<CreateAdminJobs/>
     }
   ])
   

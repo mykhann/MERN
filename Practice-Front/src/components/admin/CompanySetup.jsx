@@ -9,10 +9,12 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
+import useGetCompany from "@/customHooks/useGetCompany";
 
 const CompanySetup = () => {
     const params=useParams()
     const companyId=params.id
+    useGetCompany(companyId)
     const {company}=useSelector((store)=>store.company)
   const [input, setInput] = useState({
     name: "",
@@ -78,7 +80,7 @@ const CompanySetup = () => {
       <div className="max-w-xl mx-auto my-10">
         <form onSubmit={submitHandler}>
           <div className="flex items-center gap-5 p-8">
-            <Button onClick={()=>navigate("/admin/companies/create")}
+            <Button onClick={()=>navigate("/admin/companies")}
               variant="outline"
               className="flex items-center gap-2 text-gray-500 font-semibold"
             >

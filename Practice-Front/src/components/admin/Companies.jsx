@@ -1,37 +1,68 @@
-import React, { useEffect } from "react";
 import Navbar from "../shared/Navbar";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
-import { DotSquare, Edit, LucideEdit, Pen } from "lucide-react"; // Importing the Lucide React edit icon
+import { Pen } from "lucide-react"; // Importing the Lucide React edit icon
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import { toast } from "sonner";
-import { setCompany } from "@/Redux/companySlice";
+
 import useGetAllCompanies from "@/customHooks/useGetAllCompanies";
+import { useEffect, useState } from "react";
+import { setSearchCompanyByText } from "@/Redux/companySlice";
 
 const Companies = () => {
-  useGetAllCompanies()
-  const {companies}=useSelector((store)=>store.company)
+  const dispatch = useDispatch();
+  useGetAllCompanies();
+  const { companies, searchCompanyByText } = useSelector(
+    (store) => store.company
+  );
+  const [input, setInput] = useState("");
+  const [filterCompany, setFilterCompany] = useState([]);
   // Static job data
 
-  
-  
+  useEffect(() => {
+    dispatch(setSearchCompanyByText(input));
+  });
+  useEffect(() => {
+    if (searchCompanyByText) {
+      const filteredCompanies =
+        companies.length >= 0 &&
+        companies.filter((company) => {
+          if (!searchCompanyByText) {
+            return null;
+          }
+          return company?.name
+            ?.toLowerCase()
+            .includes(searchCompanyByText.toLowerCase());
+        });
+      setFilterCompany(filteredCompanies);
+    } else {
+      setFilterCompany(companies);
+    }
+  }, [companies, searchCompanyByText]);
   const handleEdit = (id) => {
     console.log(`Editing job with ID: ${id}`);
-    
   };
 
   const navigate = useNavigate();
   return (
     <>
       <Navbar />
-      <Button
-        onClick={() => navigate("/admin/companies/create")}
-        className="mt-3 mx-auto flex flex-end"
-      >
-        Add Company
-      </Button>
+
+      <div className="flex items-center justify-between mt-8 max-w-4xl mx-auto space-x-4">
+        <input
+          type="text"
+          placeholder="Search companies..."
+          onChange={(e) => setInput(e.target.value)}
+          className="flex-1 p-3 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-4 focus:ring-red-400 focus:border-transparent transition duration-300 ease-in-out h-12"
+        />
+        <Button
+          onClick={() => navigate("/admin/companies/create")}
+          className="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-400 transition duration-300 ease-in-out h-12"
+        >
+          Add Company
+        </Button>
+      </div>
+
       <div className="container mx-auto p-4">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
           <thead>
@@ -43,14 +74,15 @@ const Companies = () => {
             </tr>
           </thead>
           <tbody>
-            {
-              companies.length <=0?<span>No companies registered</span>:(
-                companies.map((company)=>{
-                  return (
-                    <tr className="border-b border-gray-200">
+            {companies.length <= 0 ? (
+              <span>No companies registered</span>
+            ) : (
+              filterCompany.map((company) => {
+                return (
+                  <tr className="border-b border-gray-200">
                     <td className="py-2 px-4 text-left">
                       <img
-                          src={company.logo}
+                        src={company.logo}
                         alt={company.logo}
                         className="w-16 h-16 object-cover rounded-full"
                       />
@@ -61,27 +93,27 @@ const Companies = () => {
                       {/* Popover for Action */}
                       <Popover>
                         <PopoverTrigger>
-                          <button className="text-blue-500 hover:text-blue-700">
+                          <button
+                            onClick={() =>
+                              navigate(`/admin/companies/${company?._id}`)
+                            }
+                            className="text-red-500 hover:translate-x-1 transition-shadow transform-gpu hover:text-red-700"
+                          >
                             <Pen />
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent className="p-2">
-                          {/* Edit button inside the popover */}
-                          <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
-                            <LucideEdit className="w-4 h-4" />
-                            <span>Edit</span>
-                          </button>
-                        </PopoverContent>
+                        {/* <PopoverContent className="p-2"> */}
+                        {/* Edit button inside the popover */}
+                        {/* <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
+                          
+                          </button> */}
+                        {/* </PopoverContent> */}
                       </Popover>
                     </td>
                   </tr>
-                  )
-
-                })
-              )
-              
-            }
-           
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>

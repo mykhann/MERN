@@ -43,7 +43,18 @@ const Navbar = () => {
           </h1>
         </div>
         <div className="flex items-center gap-4 sm:gap-6 lg:gap-12">
-          <ul className="hidden md:flex font-medium items-center gap-3">
+          {
+            user?.role === 'recruiter'?(<ul className="hidden md:flex font-medium items-center gap-3">
+             
+              <li>
+                <Link to="/admin/companies">Companies</Link>
+              </li>
+              <li>
+                <Link to="/admin/jobs">Jobs</Link>
+              </li>
+            </ul>
+
+            ):<ul className="hidden md:flex font-medium items-center gap-3">
             <li>
               <Link to="/">Home</Link>
             </li>
@@ -54,6 +65,7 @@ const Navbar = () => {
               <Link to="/browse">Browse</Link>
             </li>
           </ul>
+          }
           {!user ? (
             <div className="flex gap-2 md:gap-3">
               <Link to="/login">

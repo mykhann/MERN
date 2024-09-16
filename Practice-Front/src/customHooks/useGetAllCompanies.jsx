@@ -21,7 +21,7 @@ const useGetAllCompanies = () => {
         }
         fetchAllCompanies()
 
-    },[])
+    },[dispatch])
   
 
 
