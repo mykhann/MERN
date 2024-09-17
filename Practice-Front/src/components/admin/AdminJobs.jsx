@@ -1,6 +1,6 @@
 import Navbar from "../shared/Navbar";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
-import { Pen } from "lucide-react"; // Importing the Lucide React edit icon
+import { Edit2, Eye, MoreHorizontal, Pen } from "lucide-react"; // Importing the Lucide React edit icon
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { setSearchJobByText } from "@/Redux/jobSlice";
 import useGetAdminJobs from "@/customHooks/useGetAdminJobs";
 
-const Jobs = () => {
+const AdminJobs = () => {
   useGetAdminJobs();
   const { adminjobs, searchJobByText } = useSelector((store) => store.job);
   const [filterJob, setFilterJob] = useState("");
@@ -18,17 +18,17 @@ const Jobs = () => {
 
   useEffect(() => {
     dispatch(setSearchJobByText(input));
-  });
+  }, [input, dispatch]);
 
   useEffect(() => {
     if (searchJobByText) {
       const filteredjob =
         adminjobs.length > 0 &&
-        adminjobs.map((job) => {
+        adminjobs.filter((job) => {
           if (!searchJobByText) {
             return null;
           }
-          return job?.title
+          return job?.company?.name
             ?.toLowerCase()
             .includes(searchJobByText?.toLowerCase());
         });
@@ -83,23 +83,18 @@ const Jobs = () => {
                     <td className="py-2 px-4 text-left">
                       {/* Popover for Action */}
                       <Popover>
-                        <PopoverTrigger>
-                          <button
-                            onClick={() =>
-                              navigate(`/admin/companies/${company?._id}`)
-                            }
-                            className="text-red-500 hover:translate-x-1 transition-shadow transform-gpu hover:text-red-700"
-                          >
-                            <Pen />
-                          </button>
-                        </PopoverTrigger>
-                        {/* <PopoverContent className="p-2"> */}
-                        {/* Edit button inside the popover */}
-                        {/* <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
-                          
-                          </button> */}
-                        {/* </PopoverContent> */}
-                      </Popover>
+                                        <PopoverTrigger><MoreHorizontal /></PopoverTrigger>
+                                        <PopoverContent className="w-32">
+                                            <div onClick={()=> navigate(`/admin/companies/${job._id}`)} className='flex items-center gap-2 w-fit cursor-pointer'>
+                                                <Edit2 className='w-4' />
+                                                <span>Edit</span>
+                                            </div>
+                                            <div onClick={()=> navigate(`/admin/jobs/${job._id}/applicants`)} className='flex items-center w-fit gap-2 cursor-pointer mt-2'>
+                                                <Eye className='w-4'/>
+                                                <span>Applicants</span>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
                     </td>
                   </tr>
                 );
@@ -112,4 +107,4 @@ const Jobs = () => {
   );
 };
 
-export default Jobs;
+export default AdminJobs;

@@ -1,8 +1,22 @@
 import React, { useState } from "react";
 import Navbar from "../shared/Navbar";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { SelectGroup } from "@radix-ui/react-select";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const CreateAdminJobs = () => {
+  const navigate=useNavigate()
+  const { companies } = useSelector((store) => store.company);
+  // const companies=[ ]
   const [input, setInput] = useState({
     title: "",
     description: "",
@@ -14,31 +28,39 @@ const CreateAdminJobs = () => {
     experience: "",
   });
 
-  const ChangeInputHandler=(e)=>{
-   
-    setInput({...input,[e.target.name]:e.target.value})
-  }
+  const ChangeInputHandler = (e) => {
+    setInput({ ...input, [e.target.name]: e.target.value });
+  };
 
-  const handleSubmit=async(e)=>{
+  const selectChangeHandler = (value) => {
+    const selectedCompany = companies.find(
+      (company) => company.name.toLowerCase() === value
+    );
+
+    setInput({ ...input, companyId: selectedCompany._id });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-        const res=axios.post("http://localhost:8000/api/v1/job/post",input,{
-            withCredentials:true,
-            headers:{
-                "Content-Type": "application/json"
-            }
-        })
+      const res = await axios.post("http://localhost:8000/api/v1/job/post", input, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-        if (res.data.success){
-            
-        }
+      if (res.data.success) {
+        toast.success(res.data.message)
+        navigate("/admin/jobs")
+
         
+      }
     } catch (error) {
-        
-    }
-
-  }
+      toast.error(error.response.data.message)
+      console.log(error)}
+  };
 
   return (
     <>
@@ -52,7 +74,7 @@ const CreateAdminJobs = () => {
               <input
                 type="text"
                 name="title"
-                onChange={ChangeInputHandler}    
+                onChange={ChangeInputHandler}
                 value={input.title}
                 placeholder="Job Role"
                 className="w-full p-3 border border-gray-300 rounded-lg"
@@ -119,7 +141,7 @@ const CreateAdminJobs = () => {
             {/* Job Type Field */}
 
             <div className="w-full sm:w-1/2 px-2 mb-4">
-              <label className="block text-gray-700">Location</label>
+              <label className="block text-gray-700">jobType</label>
               <input
                 type="text"
                 name="jobType"
@@ -130,7 +152,6 @@ const CreateAdminJobs = () => {
                 required
               />
             </div>
-
 
             {/* <div className="w-full sm:w-1/2 px-2 mb-4">
               <label className="block text-gray-700">Job Type</label>
@@ -173,15 +194,43 @@ const CreateAdminJobs = () => {
               />
             </div>
           </div>
+          {companies.length !== 0 && (
+            <Select onValueChange={selectChangeHandler}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select Companies" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {companies.map((company) => {
+                    return (
+                      <SelectItem
+                        value={company?.name?.toLowerCase()}
+                        key={company._id}
+                      >
+                        {company?.name}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
 
           {/* Submit Button */}
+
           <div className="mb-4">
             <button
               type="submit"
-              className="w-full bg-red-500 text-white p-3 rounded-lg shadow-md hover:bg-red-600 transition-colors"
+              className="w-full mt-4 bg-red-500 text-white p-3 rounded-lg shadow-md hover:bg-red-600 transition-colors"
             >
               Submit
             </button>
+
+            {companies.length === 0 && (
+              <p className="font-medium text-red-600">
+                Please register a company before posting a job
+              </p>
+            )}
           </div>
         </form>
       </div>

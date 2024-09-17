@@ -10,7 +10,7 @@ const JobsCard = ( {job} ) => {
     <div className="border border-gray-200 rounded-lg p-4 m-4 shadow-md hover:shadow-lg transition-shadow bg-white flex flex-col">
       <div className="flex items-center mb-3">
         <img
-          src={job.companyLogo || "https://via.placeholder.com/48"} // Use job.companyLogo if available
+          src={job?.company?.logo|| "https://via.placeholder.com/48"} // Use job.companyLogo if available
           alt="Company logo"
           className="w-12 h-12 object-cover rounded-full mr-4"
         />
