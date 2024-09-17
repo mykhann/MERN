@@ -12,8 +12,26 @@ import { Popover } from "../ui/popover";
 import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { MoreHorizontal, Phone } from "lucide-react";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { toast } from "sonner";
 
 const shortlistingstatus = ["Accepted", "Rejected"];
+
+const statusHandler=async(status,id)=>{
+
+  try {
+    axios.defaults.withCredentials=true
+    const res=await axios.post(`http://localhost:8000/api/v1/application/status/${id}/update`,{status})
+    if (res.data.success){
+      toast.success(res.data.message)
+    }
+    
+  } catch (error) {
+    toast.error(error.response.data.message)
+    
+  }
+
+}
 
 const ApplicantsTable = () => {
   const { applicants } = useSelector((store) => store.applicant);
@@ -55,7 +73,7 @@ const ApplicantsTable = () => {
                     <PopoverContent className="w-32">
                       {shortlistingstatus.map((status, index) => {
                         return (
-                          <div key={index}>
+                          <div onClick={()=>statusHandler(status,item._id)} key={index}>
                             <span>{status}</span>
                           </div>
                         );

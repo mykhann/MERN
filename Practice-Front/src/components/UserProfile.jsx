@@ -9,6 +9,7 @@ import { Badge } from "../../src/components/ui/badge";
 import { Label } from "./ui/label";
 import Navbar from "./shared/Navbar";
 import OpenDialogue from "./OpenDialogue";
+import AppliedJobsTable from "./AppliedJobsTable";
 
 
 const UserProfile = () => {
@@ -99,6 +100,7 @@ const UserProfile = () => {
         </div>
 
         <OpenDialogue open={open} setOpen={setOpen} />
+        <AppliedJobsTable/>
       </div>
     </>
   );

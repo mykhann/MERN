@@ -1,5 +1,5 @@
 import Navbar from "../shared/Navbar";
-import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
+import { Popover, PopoverTrigger } from "../ui/popover";
 import { Pen } from "lucide-react"; // Importing the Lucide React edit icon
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
@@ -12,38 +12,31 @@ import { setSearchCompanyByText } from "@/Redux/companySlice";
 const Companies = () => {
   const dispatch = useDispatch();
   useGetAllCompanies();
-  const { companies, searchCompanyByText } = useSelector(
+  
+  const { companies = [], searchCompanyByText } = useSelector(
     (store) => store.company
-  );
+  ); // Ensure companies is always an array
   const [input, setInput] = useState("");
   const [filterCompany, setFilterCompany] = useState([]);
-  // Static job data
 
   useEffect(() => {
     dispatch(setSearchCompanyByText(input));
-  });
+  }, [input, dispatch]);
+
   useEffect(() => {
     if (searchCompanyByText) {
-      const filteredCompanies =
-        companies.length >= 0 &&
-        companies.filter((company) => {
-          if (!searchCompanyByText) {
-            return null;
-          }
-          return company?.name
-            ?.toLowerCase()
-            .includes(searchCompanyByText.toLowerCase());
-        });
-      setFilterCompany(filteredCompanies);
+      const filteredCompanies = companies.length > 0 &&
+        companies.filter((company) =>
+          company?.name?.toLowerCase().includes(searchCompanyByText.toLowerCase())
+        );
+      setFilterCompany(filteredCompanies || []);
     } else {
       setFilterCompany(companies);
     }
   }, [companies, searchCompanyByText]);
-  const handleEdit = (id) => {
-    console.log(`Editing job with ID: ${id}`);
-  };
 
   const navigate = useNavigate();
+  
   return (
     <>
       <Navbar />
@@ -74,45 +67,39 @@ const Companies = () => {
             </tr>
           </thead>
           <tbody>
-            {companies.length <= 0 ? (
-              <span>No companies registered</span>
+            {filterCompany.length <= 0 ? (
+              <tr>
+                <td colSpan="4" className="text-center py-4">
+                  No companies registered
+                </td>
+              </tr>
             ) : (
-              filterCompany.map((company) => {
-                return (
-                  <tr className="border-b border-gray-200">
-                    <td className="py-2 px-4 text-left">
-                      <img
-                        src={company.logo}
-                        alt={company.logo}
-                        className="w-16 h-16 object-cover rounded-full"
-                      />
-                    </td>
-                    <td className="py-2 px-4 text-left">{company?.name}</td>
-                    <td className="py-2 px-4 text-left">Date</td>
-                    <td className="py-2 px-4 text-left">
-                      {/* Popover for Action */}
-                      <Popover>
-                        <PopoverTrigger>
-                          <button
-                            onClick={() =>
-                              navigate(`/admin/companies/${company?._id}`)
-                            }
-                            className="text-red-500 hover:translate-x-1 transition-shadow transform-gpu hover:text-red-700"
-                          >
-                            <Pen />
-                          </button>
-                        </PopoverTrigger>
-                        {/* <PopoverContent className="p-2"> */}
-                        {/* Edit button inside the popover */}
-                        {/* <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
-                          
-                          </button> */}
-                        {/* </PopoverContent> */}
-                      </Popover>
-                    </td>
-                  </tr>
-                );
-              })
+              filterCompany.map((company) => (
+                <tr className="border-b border-gray-200" key={company._id}>
+                  <td className="py-2 px-4 text-left">
+                    <img
+                      src={company.logo}
+                      alt={company.logo}
+                      className="w-16 h-16 object-cover rounded-full"
+                    />
+                  </td>
+                  <td className="py-2 px-4 text-left">{company?.name}</td>
+                  <td className="py-2 px-4 text-left">Date</td>
+                  <td className="py-2 px-4 text-left">
+                    {/* Popover for Action */}
+                    <Popover>
+                      <PopoverTrigger>
+                        <button
+                          onClick={() => navigate(`/admin/companies/${company?._id}`)}
+                          className="text-red-500 hover:translate-x-1 transition-shadow transform-gpu hover:text-red-700"
+                        >
+                          <Pen />
+                        </button>
+                      </PopoverTrigger>
+                    </Popover>
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>

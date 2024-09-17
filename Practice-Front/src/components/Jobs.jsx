@@ -14,6 +14,7 @@ const Jobs = () => {
 
   return (
     <div>
+      <Navbar/>
       
       <div className="flex flex-wrap">
         {job && job.length > 0 ? (
