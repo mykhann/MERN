@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -23,7 +23,7 @@ const Signup = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.auth);
+  const { loading,user } = useSelector((state) => state.auth);
 
   const changeInputHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -62,7 +62,13 @@ const Signup = () => {
     }
   };
 
+  useEffect(()=>{
+    if (user){
+      navigate("/")
+    }
+  },[])
   return (
+
     <div>
       <Navbar />
       <div className="flex items-center justify-center px-4 py-10 sm:px-6 bg-gray-100 mt-1 lg:px-8">
